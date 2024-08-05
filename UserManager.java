@@ -55,4 +55,39 @@ public class UserManager {
         }
         return false;
     }
+    public boolean addNote(String username, String item) {
+        User user = information.get(username);
+        if (user != null) {
+            user.addNoteItem(item);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeNote(String username, String item) {
+        User user = information.get(username);
+        if (user != null) {
+            user.removeNoteItem(item);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addTodo(String username, String item) {
+        User user = information.get(username);
+        if (user != null) {
+            user.addTodoItem(item);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeTodo(String username, String item) {
+        User user = information.get(username);
+        if (user != null) {
+            user.removeTodoItem(item);
+            return true;
+        }
+        return false;
+    }
 }

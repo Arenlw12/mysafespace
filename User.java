@@ -1,7 +1,7 @@
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.security.PrivateKey;
+import java.util.*;
 
 public class User implements Cloneable {
     private String name;
@@ -9,6 +9,8 @@ public class User implements Cloneable {
     private String email;
     private String bio;
     private String password;
+    private List<String> notes;
+    private List<String> todo;
 
     public User(String name, String age, String email, String bio, String password) {
         this.name = name;
@@ -16,6 +18,8 @@ public class User implements Cloneable {
         this.email = email;
         this.bio = bio;
         this.password = password;
+        this.notes = new ArrayList<>(notes);
+        this.todo = new ArrayList<>(todo);
     }
 
     public String getName() {
@@ -58,7 +62,34 @@ public class User implements Cloneable {
         this.password = password;
     }
 
+    public List<String> getNotes() {
+        return new ArrayList<>(notes);
+    }
+
+    public void addNoteItem(String item) {
+        this.notes.add(item);
+    }
+
+    public void removeNoteItem(String item) {
+        this.notes.remove(item);
+    }
+
+    public List<String> getTodoList() {
+        return new ArrayList<>(todo);
+    }
+
+    public void addTodoItem(String item) {
+        this.todo.add(item);
+    }
+
+    public void removeTodoItem(String item) {
+        this.todo.remove(item);
+    }
+
     protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        User cloned = (User) super.clone();
+        cloned.notes = new ArrayList<>(this.notes);
+        cloned.todo = new ArrayList<>(this.todo);
+        return cloned;
     }
 }
