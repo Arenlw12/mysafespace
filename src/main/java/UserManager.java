@@ -6,7 +6,7 @@ import java.util.Map;
 public class UserManager {
     private final Map<String, User> information = new HashMap<>();
 
-    public void addUser(String username, String age, String email, String bio, String password) {
+    public void addUser(String username, int age, String email, String bio, String password) {
         if (!information.containsKey(username)) {
             String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             User user = new User(username, age, email, bio, hashedPassword);
@@ -17,6 +17,8 @@ public class UserManager {
     }
 
     public boolean verifyPassword(String username, String inputPassword) {
+        if (information.get(username) == null)
+             return false;
         String storedHash = information.get(username).getPassword();
         if (username == null)
             return false;
