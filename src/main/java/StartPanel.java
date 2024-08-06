@@ -2,17 +2,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 
 public class StartPanel extends JFrame {
-    private JPanel loginPanel;
+    private final JPanel loginPanel;
     private JTextField userField;
     private JPasswordField passField;
 
     private JTextField ageField;
     private JTextField emailField;
     private JTextArea bioField;
-    private  UserManager loggedUser = new UserManager();
+    private final UserManager loggedUser = new UserManager();
 
     public StartPanel() {
         setTitle("MySafeSpace Login");
@@ -85,12 +84,12 @@ public class StartPanel extends JFrame {
                 String username = userField.getText();
                 String password = String.valueOf(passField.getPassword());
                 UserManager loggedUser = new UserManager();
-                //loggedUser.addUser("user1", 19, "user1@example.com", "OMG SO COOl", "believer123");
-                if (!username.isEmpty() && !password.isEmpty() && loggedUser.verifyPassword(username, password))
-                    JOptionPane.showMessageDialog(StartPanel.this, "Login successful!");
-                else if (!username.isEmpty() && !password.isEmpty() && !loggedUser.verifyPassword(username, password)) {
-                    JOptionPane.showMessageDialog(StartPanel.this, "Wrong username, or password.", "MySafeSpace", JOptionPane.ERROR_MESSAGE);
-                }
+                loggedUser.addUser("user1", 19, "user1@example.com", "OMG SO COOl", "believer123");
+                if (!username.isEmpty() && !password.isEmpty())
+                    if (loggedUser.verifyPassword(username, password))
+                        JOptionPane.showMessageDialog(StartPanel.this, "Login successful!");
+                    else
+                        JOptionPane.showMessageDialog(StartPanel.this, "Wrong username, or password.", "MySafeSpace", JOptionPane.ERROR_MESSAGE);
                 showLoginFields();
             }
         });
@@ -99,6 +98,15 @@ public class StartPanel extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 showRegistrationFields();
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new StartPanel().setVisible(true);
             }
         });
     }
@@ -175,52 +183,43 @@ public class StartPanel extends JFrame {
     }
 
     private void showLoginFields() {
-            loginPanel.removeAll();
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.insets = new Insets(5, 5, 5, 5);
+        loginPanel.removeAll();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
 
-            JLabel userLabel = new JLabel("Username:");
-            userField = new JTextField(15);
-            JLabel passLabel = new JLabel("Password:");
-            passField = new JPasswordField(15);
+        JLabel userLabel = new JLabel("Username:");
+        userField = new JTextField(15);
+        JLabel passLabel = new JLabel("Password:");
+        passField = new JPasswordField(15);
 
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.anchor = GridBagConstraints.EAST;
-            loginPanel.add(userLabel, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        loginPanel.add(userLabel, gbc);
 
-            gbc.gridx = 1;
-            gbc.gridy = 0;
-            gbc.anchor = GridBagConstraints.WEST;
-            loginPanel.add(userField, gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        loginPanel.add(userField, gbc);
 
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            gbc.anchor = GridBagConstraints.EAST;
-            loginPanel.add(passLabel, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        loginPanel.add(passLabel, gbc);
 
-            gbc.gridx = 1;
-            gbc.gridy = 1;
-            gbc.anchor = GridBagConstraints.WEST;
-            loginPanel.add(passField, gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        loginPanel.add(passField, gbc);
 
-            gbc.gridx = 0;
-            gbc.gridy = 2;
-            gbc.gridwidth = 2;
-            gbc.weighty = 1.0;
-            loginPanel.add(Box.createVerticalGlue(), gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.weighty = 1.0;
+        loginPanel.add(Box.createVerticalGlue(), gbc);
 
-            loginPanel.revalidate();
-            loginPanel.repaint();
+        loginPanel.revalidate();
+        loginPanel.repaint();
 
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new StartPanel().setVisible(true);
-            }
-        });
     }
 }

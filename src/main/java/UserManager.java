@@ -18,14 +18,14 @@ public class UserManager {
 
     public boolean verifyPassword(String username, String inputPassword) {
         if (information.get(username) == null)
-             return false;
+            return false;
         String storedHash = information.get(username).getPassword();
         if (username == null)
             return false;
         return BCrypt.checkpw(inputPassword, storedHash);
     }
 
-    public User getUserInformation(String username, String inputPassword){
+    public User getUserInformation(String username, String inputPassword) {
         if (inputPassword != null && verifyPassword(username, inputPassword)) {
             try {
                 return (User) information.get(username).clone();
@@ -57,6 +57,7 @@ public class UserManager {
         }
         return false;
     }
+
     public boolean addNote(String username, String item) {
         User user = information.get(username);
         if (user != null) {
