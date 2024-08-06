@@ -99,7 +99,7 @@ public class StartPanel extends JFrame {
     private void showRegistrationFields() {
         loginPanel.removeAll();
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5); // Adding padding between components
+        gbc.insets = new Insets(5, 5, 5, 5);
 
         JLabel userLabel = new JLabel("Username:");
         JLabel passLabel = new JLabel("Password:");
@@ -170,12 +170,12 @@ public class StartPanel extends JFrame {
     private void showLoginFields() {
         loginPanel.removeAll();
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5); // Adding padding between components
+        gbc.insets = new Insets(5, 5, 5, 5);
 
         JLabel userLabel = new JLabel("Username:");
-        userField = new JTextField(15); // Setting preferred width for the text field
+        userField = new JTextField(15);
         JLabel passLabel = new JLabel("Password:");
-        passField = new JPasswordField(15); // Setting preferred width for the password field
+        passField = new JPasswordField(15);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -197,7 +197,6 @@ public class StartPanel extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         loginPanel.add(passField, gbc);
 
-        // Adding empty space below to push the input fields upward
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 2;
