@@ -18,8 +18,8 @@ public class User implements Cloneable {
         this.email = email;
         this.bio = bio;
         this.password = password;
-        this.notes = new ArrayList<>(notes);
-        this.todo = new ArrayList<>(todo);
+        this.notes = new ArrayList<>();
+        this.todo = new ArrayList<>();
     }
 
     public String getName() {
