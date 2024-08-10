@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class StartPanel extends JFrame {
+    private boolean switchRegistration = true;
     private final JPanel loginPanel;
     private JTextField userField;
     private JPasswordField passField;
@@ -11,10 +12,12 @@ public class StartPanel extends JFrame {
     private JTextField ageField;
     private JTextField emailField;
     private JTextArea bioField;
-    private final UserManager loggedUser = new UserManager();
+    private final UserManager userManager;
 
     public StartPanel() {
-        setTitle("MySafeSpace Login");
+        userManager = new UserManager();
+
+        setTitle("MySafeSpace");
         setSize(400, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -23,7 +26,7 @@ public class StartPanel extends JFrame {
 
         JPanel titlePanel = new JPanel();
         titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 0, 10));
-        JLabel appNameLabel = new JLabel("My Application", SwingConstants.CENTER);
+        JLabel appNameLabel = new JLabel("MySafeSpace", SwingConstants.CENTER);
         appNameLabel.setFont(new Font("Roboto", Font.BOLD, 26));
         titlePanel.add(appNameLabel);
         add(titlePanel, BorderLayout.NORTH);
@@ -60,7 +63,6 @@ public class StartPanel extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.gridwidth = 2;
         gbc.weighty = 1.0;
         loginPanel.add(Box.createVerticalGlue(), gbc);
 
@@ -81,15 +83,8 @@ public class StartPanel extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = userField.getText();
-                String password = String.valueOf(passField.getPassword());
-                UserManager loggedUser = new UserManager();
-                loggedUser.addUser("user1", 19, "user1@example.com", "OMG SO COOl", "believer123");
-                if (!username.isEmpty() && !password.isEmpty())
-                    if (loggedUser.verifyPassword(username, password))
-                        JOptionPane.showMessageDialog(StartPanel.this, "Login successful!");
-                    else
-                        JOptionPane.showMessageDialog(StartPanel.this, "Wrong username, or password.", "MySafeSpace", JOptionPane.ERROR_MESSAGE);
+                switchRegistration = true;
+                validateLoginFields();
                 showLoginFields();
             }
         });
@@ -97,19 +92,99 @@ public class StartPanel extends JFrame {
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showRegistrationFields();
+                if (switchRegistration) {
+                    showRegistrationFields();
+                    switchRegistration = false;
+                }
+                else {
+                    validateRegistrationFields();
+                }
             }
         });
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new StartPanel().setVisible(true);
-            }
-        });
+    private void validateLoginFields() {
+        boolean valid = true;
+        switchRegistration = false;
+
+        userField.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+        passField.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("PasswordField.border"));
+
+        if (userField.getText().isEmpty()) {
+            userField.setBorder(BorderFactory.createLineBorder(Color.RED));
+            valid = false;
+        }
+        if (passField.getPassword().length == 0) {
+            passField.setBorder(BorderFactory.createLineBorder(Color.RED));
+            valid = false;
+        }
+
+        if (valid) {
+            String username = userField.getText();
+            String password = new String(passField.getPassword());
+
+            if (userManager.verifyPassword(username, password))
+                JOptionPane.showMessageDialog(StartPanel.this, "Login successful!");
+
+            else
+                JOptionPane.showMessageDialog(StartPanel.this, "Wrong username, or password.", "Error", JOptionPane.ERROR_MESSAGE);
+
+            revalidate();
+            repaint();
+        } else if (!switchRegistration) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+            switchRegistration = true;
+        }
+
     }
+
+    private void validateRegistrationFields() {
+        boolean valid = true;
+
+        userField.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+        passField.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("PasswordField.border"));
+        ageField.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+        emailField.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+        bioField.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextArea.border"));
+
+        if (userField.getText().isEmpty()) {
+            userField.setBorder(BorderFactory.createLineBorder(Color.RED));
+            valid = false;
+        }
+        if (passField.getPassword().length == 0) {
+            passField.setBorder(BorderFactory.createLineBorder(Color.RED));
+            valid = false;
+        }
+        if (ageField.getText().isEmpty()) {
+            ageField.setBorder(BorderFactory.createLineBorder(Color.RED));
+            valid = false;
+        }
+        if (emailField.getText().isEmpty()) {
+            emailField.setBorder(BorderFactory.createLineBorder(Color.RED));
+            valid = false;
+        }
+        if (bioField.getText().isEmpty()) {
+            bioField.setBorder(BorderFactory.createLineBorder(Color.RED));
+            valid = false;
+        }
+
+        if (valid) {
+            String username = userField.getText();
+            String password = new String(passField.getPassword());
+            int age = Integer.parseInt(ageField.getText());
+            String email = emailField.getText();
+            String bio = bioField.getText();
+
+            userManager.addUser(username, age, email, bio, password);
+            JOptionPane.showMessageDialog(this, "Registration successful!");
+
+            revalidate();
+            repaint();
+        } else
+            JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+
+    }
+
 
     private void showRegistrationFields() {
         loginPanel.removeAll();
@@ -127,6 +202,9 @@ public class StartPanel extends JFrame {
         ageField = new JTextField(15);
         emailField = new JTextField(15);
         bioField = new JTextArea(3, 15);
+        bioField.setLineWrap(true);
+        bioField.setWrapStyleWord(true);
+
 
         gbc.gridx = 0;
         gbc.gridy = 0;
