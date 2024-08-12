@@ -12,10 +12,13 @@ public class StartPanel extends JFrame {
     private JTextField ageField;
     private JTextField emailField;
     private JTextArea bioField;
-    private final UserManager userManager;
+    private final UserManager userManager = new UserManager();
+
+    public UserManager getUserManager() {
+        return userManager;
+    }
 
     public StartPanel() {
-        userManager = new UserManager();
 
         setTitle("MySafeSpace");
         setSize(400, 400);
@@ -80,25 +83,19 @@ public class StartPanel extends JFrame {
 
         add(buttonPanel, BorderLayout.SOUTH);
 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switchRegistration = true;
-                validateLoginFields();
-                showLoginFields();
-            }
+        loginButton.addActionListener(e -> {
+            switchRegistration = true;
+            validateLoginFields();
+            showLoginFields();
         });
 
-        registerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (switchRegistration) {
-                    showRegistrationFields();
-                    switchRegistration = false;
-                }
-                else {
-                    validateRegistrationFields();
-                }
+        registerButton.addActionListener(e -> {
+            if (switchRegistration) {
+                showRegistrationFields();
+                switchRegistration = false;
+            }
+            else {
+                validateRegistrationFields();
             }
         });
     }

@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User implements Cloneable {
+public class User implements Cloneable, Serializable {
     private String name;
     private int age;
     private String email;

@@ -1,16 +1,23 @@
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class UserManager {
-    private final Map<String, User> information = new HashMap<>();
+    private static final String FILE_PATH = "users.dat";
+    private Map<String, User> information = new HashMap<>();
+
+    public UserManager() {
+        loadUsers();
+    }
 
     public void addUser(String username, int age, String email, String bio, String password) {
         if (!information.containsKey(username)) {
             String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             User user = new User(username, age, email, bio, hashedPassword);
             information.put(username, user);
+            saveUsers();
         } else {
             System.out.println("User with username " + username + " already exists.");
         }
@@ -38,6 +45,7 @@ public class UserManager {
 
     public void removeUser(String username) {
         information.remove(username);
+        saveUsers();
     }
 
     public boolean updateUserEmail(String username, String newEmail) {
@@ -92,5 +100,33 @@ public class UserManager {
             return true;
         }
         return false;
+    }
+
+    private void saveUsers() {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
+            outputStream.writeObject(information);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadUsers() {
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
+            information = (Map<String, User>) inputStream.readObject();
+        } catch (FileNotFoundException e) {
+            information = new HashMap<>();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void printAllUsers() {
+        if (information.isEmpty()) {
+            System.out.println("No users found.");
+        } else {
+            for (User user : information.values()) {
+                System.out.println("Username: " + user.getName() + ", Email: " + user.getEmail() + ", To-do List: " + user.getTodoList());
+            }
+        }
     }
 }
