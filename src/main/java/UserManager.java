@@ -48,7 +48,7 @@ public class UserManager {
 
     public void removeUser(String username) {
         information.remove(username);
-        deleteUserFiles(username);  // Remove user's data files
+        deleteUserFiles(username);
         saveUsers();
     }
 
