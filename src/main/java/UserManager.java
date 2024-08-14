@@ -1,11 +1,14 @@
 import org.mindrot.jbcrypt.BCrypt;
-
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserManager {
-    private static final String FILE_PATH = "users.dat";
+    private static final String USERS_FILE_PATH = "users.dat";
+    private static final String NOTES_FILE_EXTENSION = ".notes";
+    private static final String TODO_FILE_EXTENSION = ".todo";
     private Map<String, User> information = new HashMap<>();
 
     public UserManager() {
@@ -18,24 +21,24 @@ public class UserManager {
             User user = new User(username, age, email, bio, hashedPassword);
             information.put(username, user);
             saveUsers();
+            saveUserData(username);
         } else {
             System.out.println("User with username " + username + " already exists.");
         }
     }
 
     public boolean verifyPassword(String username, String inputPassword) {
-        if (information.get(username) == null)
-            return false;
+        if (information.get(username) == null) return false;
         String storedHash = information.get(username).getPassword();
-        if (username == null)
-            return false;
-        return BCrypt.checkpw(inputPassword, storedHash);
+        return storedHash != null && BCrypt.checkpw(inputPassword, storedHash);
     }
 
     public User getUserInformation(String username, String inputPassword) {
         if (inputPassword != null && verifyPassword(username, inputPassword)) {
             try {
-                return (User) information.get(username).clone();
+                User clonedUser = (User) information.get(username).clone();
+                loadUserData(username, clonedUser);
+                return clonedUser;
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
             }
@@ -45,6 +48,7 @@ public class UserManager {
 
     public void removeUser(String username) {
         information.remove(username);
+        deleteUserFiles(username);  // Remove user's data files
         saveUsers();
     }
 
@@ -52,6 +56,7 @@ public class UserManager {
         User user = information.get(username);
         if (user != null) {
             user.setEmail(newEmail);
+            saveUsers();
             return true;
         }
         return false;
@@ -61,6 +66,7 @@ public class UserManager {
         User user = information.get(username);
         if (user != null) {
             user.setBio(newBio);
+            saveUsers();
             return true;
         }
         return false;
@@ -70,6 +76,7 @@ public class UserManager {
         User user = information.get(username);
         if (user != null) {
             user.addNoteItem(item);
+            saveUsers();
             return true;
         }
         return false;
@@ -79,6 +86,7 @@ public class UserManager {
         User user = information.get(username);
         if (user != null) {
             user.removeNoteItem(item);
+            saveUsers();
             return true;
         }
         return false;
@@ -88,6 +96,7 @@ public class UserManager {
         User user = information.get(username);
         if (user != null) {
             user.addTodoItem(item);
+            saveUserData(username);
             return true;
         }
         return false;
@@ -97,13 +106,14 @@ public class UserManager {
         User user = information.get(username);
         if (user != null) {
             user.removeTodoItem(item);
+            saveUserData(username);
             return true;
         }
         return false;
     }
 
     private void saveUsers() {
-        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(USERS_FILE_PATH))) {
             outputStream.writeObject(information);
         } catch (IOException e) {
             e.printStackTrace();
@@ -111,7 +121,7 @@ public class UserManager {
     }
 
     private void loadUsers() {
-        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(USERS_FILE_PATH))) {
             information = (Map<String, User>) inputStream.readObject();
         } catch (FileNotFoundException e) {
             information = new HashMap<>();
@@ -120,12 +130,48 @@ public class UserManager {
         }
     }
 
+    private void saveUserData(String username) {
+        saveListToFile(information.get(username).getNotes(), username + NOTES_FILE_EXTENSION);
+        saveListToFile(information.get(username).getTodoList(), username + TODO_FILE_EXTENSION);
+    }
+
+    private void loadUserData(String username, User user) {
+        user.getNotes().clear();
+        user.getTodoList().clear();
+        user.getNotes().addAll(loadListFromFile(username + NOTES_FILE_EXTENSION));
+        user.getTodoList().addAll(loadListFromFile(username + TODO_FILE_EXTENSION));
+    }
+
+    private void saveListToFile(List<String> list, String fileName) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            outputStream.writeObject(list);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<String> loadListFromFile(String fileName) {
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(fileName))) {
+            return (List<String>) inputStream.readObject();
+        } catch (FileNotFoundException e) {
+            return new ArrayList<>();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    private void deleteUserFiles(String username) {
+        new File(username + NOTES_FILE_EXTENSION).delete();
+        new File(username + TODO_FILE_EXTENSION).delete();
+    }
+
     public void printAllUsers() {
         if (information.isEmpty()) {
             System.out.println("No users found.");
         } else {
             for (User user : information.values()) {
-                System.out.println("Username: " + user.getName() + ", Email: " + user.getEmail() + ", To-do List: " + user.getTodoList());
+                System.out.println("Username: " + user.getName() + ", Email: " + user.getEmail() + ", To-do List: " + user.getTodoList() + ", Notes: " + user.getNotes());
             }
         }
     }
