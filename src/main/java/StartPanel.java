@@ -2,19 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 
 public class StartPanel extends JFrame {
-    private boolean switchRegistration = true;
     private final JPanel loginPanel;
+    private final UserManager userManager = new UserManager();
+    private boolean switchRegistration = true;
     private JTextField userField;
     private JPasswordField passField;
-
     private JTextField ageField;
     private JTextField emailField;
     private JTextArea bioField;
-    private final UserManager userManager = new UserManager();
-
-    public UserManager getUserManager() {
-        return userManager;
-    }
 
     public StartPanel() {
 
@@ -91,11 +86,14 @@ public class StartPanel extends JFrame {
             if (switchRegistration) {
                 showRegistrationFields();
                 switchRegistration = false;
-            }
-            else {
+            } else {
                 validateRegistrationFields();
             }
         });
+    }
+
+    public UserManager getUserManager() {
+        return userManager;
     }
 
     private void validateLoginFields() {

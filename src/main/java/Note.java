@@ -1,9 +1,9 @@
-import java.io.*;
+import java.io.Serializable;
 
 public class Note implements Serializable {
-    private String title;
-    private String content;
-    private String timestamp;
+    private final String title;
+    private final String content;
+    private final String timestamp;
 
     public Note(String title, String content, String timestamp) {
         this.title = title;

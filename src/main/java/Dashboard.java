@@ -1,16 +1,20 @@
 import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.text.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 public class Dashboard extends JFrame {
-    private List<Note> notes;
+    private final List<Note> notes;
     private JPanel notesDisplayPanel;
-    private UserManager userManager;
-    private User user;
+    private final UserManager userManager;
+    private final User user;
 
     public Dashboard(UserManager userManager, User user) {
         this.userManager = userManager;
@@ -86,7 +90,7 @@ public class Dashboard extends JFrame {
             String content = newNoteArea.getText().trim();
             if (!content.isEmpty()) {
                 String dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-                Note note = new Note(title,content,dateTime);
+                Note note = new Note(title, content, dateTime);
                 notes.add(note);
                 userManager.addNote(user.getName(), note);
                 notesDisplayPanel.add(createNoteComponent(title, content, dateTime));
@@ -142,7 +146,7 @@ public class Dashboard extends JFrame {
         deleteButton.setPreferredSize(new Dimension(30, 30));
         deleteButton.setBorder(new LineBorder(Color.BLACK));
 
-        Note note = new Note(title,content,dateTime);
+        Note note = new Note(title, content, dateTime);
         deleteButton.addActionListener(e -> {
             notes.remove(note);
             userManager.removeNote(user.getName(), note);
