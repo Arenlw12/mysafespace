@@ -8,7 +8,7 @@ public class User implements Cloneable, Serializable {
     private String email;
     private String bio;
     private String password;
-    private List<String> notes;
+    private List<Note> notes;
     private List<String> todo;
 
     public User(String name, int age, String email, String bio, String password) {
@@ -61,15 +61,15 @@ public class User implements Cloneable, Serializable {
         this.password = password;
     }
 
-    public List<String> getNotes() {
+    public List<Note> getNotes() {
         return new ArrayList<>(notes);
     }
 
-    public void addNoteItem(String item) {
+    public void addNoteItem(Note item) {
         this.notes.add(item);
     }
 
-    public void removeNoteItem(String item) {
+    public void removeNoteItem(Note item) {
         this.notes.remove(item);
     }
 

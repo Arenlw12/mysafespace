@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Dashboard extends JFrame {
-    private List<String> notes;
+    private List<Note> notes;
     private JPanel notesDisplayPanel;
     private UserManager userManager;
     private User user;
@@ -83,12 +83,13 @@ public class Dashboard extends JFrame {
         JButton addNoteButton = new JButton("Add Note");
         addNoteButton.addActionListener(e -> {
             String title = noteTitleField.getText().trim();
-            String note = newNoteArea.getText().trim();
-            if (!note.isEmpty()) {
+            String content = newNoteArea.getText().trim();
+            if (!content.isEmpty()) {
                 String dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                Note note = new Note(title,content,dateTime);
                 notes.add(note);
                 userManager.addNote(user.getName(), note);
-                notesDisplayPanel.add(createNoteComponent(title, note, dateTime));
+                notesDisplayPanel.add(createNoteComponent(title, content, dateTime));
                 noteTitleField.setText("");
                 newNoteArea.setText("");
                 notesDisplayPanel.revalidate();
@@ -107,7 +108,7 @@ public class Dashboard extends JFrame {
         return panel;
     }
 
-    private JPanel createNoteComponent(String title, String note, String dateTime) {
+    private JPanel createNoteComponent(String title, String content, String dateTime) {
         JPanel notePanel = new JPanel(new BorderLayout());
         notePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         notePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -123,7 +124,8 @@ public class Dashboard extends JFrame {
         titlePanel.add(date, BorderLayout.EAST);
         date.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 30));
 
-        JTextArea noteText = new JTextArea(note);
+
+        JTextArea noteText = new JTextArea(content);
         noteText.setLineWrap(true);
         noteText.setWrapStyleWord(true);
         noteText.setEditable(false);
@@ -139,6 +141,8 @@ public class Dashboard extends JFrame {
         deleteButton.setContentAreaFilled(false);
         deleteButton.setPreferredSize(new Dimension(30, 30));
         deleteButton.setBorder(new LineBorder(Color.BLACK));
+
+        Note note = new Note(title,content,dateTime);
         deleteButton.addActionListener(e -> {
             notes.remove(note);
             userManager.removeNote(user.getName(), note);
@@ -147,6 +151,7 @@ public class Dashboard extends JFrame {
             notesDisplayPanel.repaint();
         });
 
+
         notePanel.add(deleteButton, BorderLayout.EAST);
         notesDisplayPanel.add(Box.createVerticalStrut(5));
 
@@ -154,9 +159,8 @@ public class Dashboard extends JFrame {
     }
 
     private void loadNotes() {
-        for (String note : notes) {
-            String dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-            notesDisplayPanel.add(createNoteComponent("Untitled", note, dateTime));
+        for (Note note : notes) {
+            notesDisplayPanel.add(createNoteComponent(note.getTitle(), note.getContent(), note.getTimestamp()));
         }
         notesDisplayPanel.revalidate();
         notesDisplayPanel.repaint();

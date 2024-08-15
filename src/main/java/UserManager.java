@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class UserManager {
-    private static final String USERS_FILE_PATH = "users.dat";
+    private static final String USERS_FILE_PATH = "database/users/users.dat";
     private static final String NOTES_FILE_EXTENSION = ".notes";
     private static final String TODO_FILE_EXTENSION = ".todo";
     private Map<String, User> information = new HashMap<>();
@@ -15,16 +15,16 @@ public class UserManager {
         loadUsers();
     }
 
-    public void addUser(String username, int age, String email, String bio, String password) {
+    public boolean addUser(String username, int age, String email, String bio, String password) {
         if (!information.containsKey(username)) {
             String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             User user = new User(username, age, email, bio, hashedPassword);
             information.put(username, user);
             saveUsers();
             saveUserData(username);
-        } else {
-            System.out.println("User with username " + username + " already exists.");
+            return true;
         }
+        return false;
     }
 
     public boolean verifyPassword(String username, String inputPassword) {
@@ -72,7 +72,7 @@ public class UserManager {
         return false;
     }
 
-    public boolean addNote(String username, String item) {
+    public boolean addNote(String username, Note item) {
         User user = information.get(username);
         if (user != null) {
             user.addNoteItem(item);
@@ -82,7 +82,7 @@ public class UserManager {
         return false;
     }
 
-    public boolean removeNote(String username, String item) {
+    public boolean removeNote(String username, Note item) {
         User user = information.get(username);
         if (user != null) {
             user.removeNoteItem(item);
@@ -131,18 +131,19 @@ public class UserManager {
     }
 
     private void saveUserData(String username) {
-        saveListToFile(information.get(username).getNotes(), username + NOTES_FILE_EXTENSION);
-        saveListToFile(information.get(username).getTodoList(), username + TODO_FILE_EXTENSION);
+        saveListToFile(information.get(username).getNotes(), "database/" + username + NOTES_FILE_EXTENSION);
+        saveListToFile(information.get(username).getTodoList(), "database/" + username + TODO_FILE_EXTENSION);
     }
 
     private void loadUserData(String username, User user) {
         user.getNotes().clear();
         user.getTodoList().clear();
-        user.getNotes().addAll(loadListFromFile(username + NOTES_FILE_EXTENSION));
-        user.getTodoList().addAll(loadListFromFile(username + TODO_FILE_EXTENSION));
+        user.getNotes().addAll(loadListFromFile("database/" + username + NOTES_FILE_EXTENSION));
+        user.getTodoList().addAll(loadListFromFile("database/" + username + TODO_FILE_EXTENSION));
     }
 
-    private void saveListToFile(List<String> list, String fileName) {
+
+    private <T> void saveListToFile(List<T> list, String fileName) {
         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(fileName))) {
             outputStream.writeObject(list);
         } catch (IOException e) {
@@ -150,9 +151,9 @@ public class UserManager {
         }
     }
 
-    private List<String> loadListFromFile(String fileName) {
+    private <T> List<T> loadListFromFile(String fileName) {
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(fileName))) {
-            return (List<String>) inputStream.readObject();
+            return (List<T>) inputStream.readObject();
         } catch (FileNotFoundException e) {
             return new ArrayList<>();
         } catch (IOException | ClassNotFoundException e) {
